@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>8161b3de-4bec-402d-beda-3c93a45e8ebd</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DbAnalyzer.Core.Test\**" />
+    <Compile Remove="DbAnalyzer.Core\**" />
+    <Compile Remove="DbAnalyzer.Domain\**" />
+    <Content Remove="DbAnalyzer.Core.Test\**" />
+    <Content Remove="DbAnalyzer.Core\**" />
+    <Content Remove="DbAnalyzer.Domain\**" />
+    <EmbeddedResource Remove="DbAnalyzer.Core.Test\**" />
+    <EmbeddedResource Remove="DbAnalyzer.Core\**" />
+    <EmbeddedResource Remove="DbAnalyzer.Domain\**" />
+    <None Remove="DbAnalyzer.Core.Test\**" />
+    <None Remove="DbAnalyzer.Core\**" />
+    <None Remove="DbAnalyzer.Domain\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="DbAnalyzer.Core\DbAnalyzer.Core.csproj" />
+    <ProjectReference Include="DbAnalyzer.Domain\DbAnalyzer.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
