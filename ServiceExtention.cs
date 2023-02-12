@@ -1,4 +1,5 @@
-﻿using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes;
+﻿using DbAnalyzer.Core.Infrastructure.Configurations;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Interfaces;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Interfaces;
@@ -20,6 +21,7 @@ namespace DbAnalyzer
             services.AddTransient<IReportGenerator<Report, ProceduresReportQueryDto>, ProceduresReport>();
             services.AddTransient<IReportGenerator<Report, DublicateIndexesQueryDto>, DublicateIndexesReport>();
             services.AddTransient<IReportGenerator<Report, UnusedIndexesQueryDto>, UnusedIndexesReport>();
+            services.AddSingleton<IAppConfig, AppConfig>();
         }
     }
 }

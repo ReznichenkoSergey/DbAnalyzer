@@ -1,7 +1,7 @@
 ﻿using Dapper;
+using DbAnalyzer.Core.Infrastructure.Configurations;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Interfaces;
 using DbAnalyzer.Core.Models.ExecPlanModels;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data.SqlClient;
 
@@ -10,7 +10,7 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes
     public class IndexExplorer : IIndexExplorer
     {
         readonly ILogger<IndexExplorer> _logger;
-        private readonly string _connectionString;
+        private readonly IAppConfig _appConfig;
         private readonly string UnusedIndexQuery = @"SELECT 
                                         '[' + s.name + '].[' + o.name + ']' TableName,
 	                                    '[' + s.name + '].[' + i.name + ']' IndexName,
@@ -109,10 +109,11 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes
 	                                                    key_column_list,
 	                                                    include_column_list";
 
-        public IndexExplorer(IConfiguration configuration, ILogger<IndexExplorer> logger)
+        public IndexExplorer(ILogger<IndexExplorer> logger,
+            IAppConfig appConfig)
         {
-            _connectionString = configuration.GetConnectionString("SqlConnection") ?? string.Empty;
             _logger = logger;
+            _appConfig = appConfig;
         }
 
         /// <summary>
@@ -123,7 +124,7 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes
         {
             try
             {
-                using var con = new SqlConnection(_connectionString);
+                using var con = new SqlConnection(_appConfig.GetCurrentDataSourceConnectionString());
                 return await con.QueryAsync<UnusedIndexStatistic>(UnusedIndexQuery);
             }
             catch (Exception ex)
@@ -141,7 +142,7 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes
         {
             try
             {
-                using var con = new SqlConnection(_connectionString);
+                using var con = new SqlConnection(_appConfig.GetCurrentDataSourceConnectionString());
                 return await con.QueryAsync<DbIndex>(DublicateIndexesQuery);
             }
             catch (Exception ex)

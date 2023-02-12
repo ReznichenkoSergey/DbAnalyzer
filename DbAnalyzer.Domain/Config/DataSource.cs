@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DbAnalyzer.Domain.Configurations
 {
-    [Table("DatabaseConfigList", Schema = "config")]
-    public class DatabaseConfigList
+    [Table("DataSources", Schema = "config")]
+    public class DataSource
     {
         [Key]
         [Required]
@@ -19,7 +19,7 @@ namespace DbAnalyzer.Domain.Configurations
         public string Name { get; set; }
 
         [Required]
-        [Column(TypeName = "NVARCHAR(100)")]
+        [Column(TypeName = "NVARCHAR(250)")]
         public string Value { get; set; }
 
         [Column(TypeName = "NVARCHAR(100)")]

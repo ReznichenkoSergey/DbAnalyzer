@@ -6,6 +6,7 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes
     {
         public bool GenerateScripts { get; set; } = true;
         public bool ShowAnnotation { get; set; } = true;
+        
         public bool IsValid() => GenerateScripts || ShowAnnotation;
     }
 }

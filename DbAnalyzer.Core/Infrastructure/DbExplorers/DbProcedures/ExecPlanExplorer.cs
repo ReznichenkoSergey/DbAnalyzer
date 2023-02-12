@@ -1,9 +1,9 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using System.Text;
-using Dapper;
+using DbAnalyzer.Core.Infrastructure.Configurations;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Interfaces;
-using Microsoft.Extensions.Configuration;
+using DbAnalyzer.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
@@ -12,15 +12,17 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
     {
         readonly ILogger<ExecPlanExplorer> _logger;
         private readonly IProcedureExplorer _explorer;
-        private readonly string _connectionString;
+        private readonly IAppConfig _appConfig;
         private const string EnableExPlan = "SET SHOWPLAN_XML ON;";
         private const string DisableExPlan = "SET SHOWPLAN_XML OFF;";
 
-        public ExecPlanExplorer(IConfiguration configuration, ILogger<ExecPlanExplorer> logger, IProcedureExplorer explorer)
+        public ExecPlanExplorer(ILogger<ExecPlanExplorer> logger, 
+            IProcedureExplorer explorer,
+            IAppConfig appConfig)
         {
-            _connectionString = configuration.GetConnectionString("SqlConnection") ?? string.Empty;
             _logger = logger;
             _explorer = explorer;
+            _appConfig = appConfig;
         }
 
         public async Task<ExecPlanResultDto> GetExecPlanAsync(string procName)
@@ -30,7 +32,7 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
                 try
                 {
                     var query = GetPreparedQuery(procName);
-                    using var con = new SqlConnection(_connectionString);
+                    using var con = new SqlConnection(_appConfig.GetCurrentDataSourceConnectionString());
 
                     con.Open();
                     using var cmd = new SqlCommand()

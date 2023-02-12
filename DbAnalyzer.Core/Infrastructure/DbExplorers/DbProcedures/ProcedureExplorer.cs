@@ -1,7 +1,8 @@
 ﻿using Dapper;
+using DbAnalyzer.Core.Infrastructure.Configurations;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Interfaces;
-using Microsoft.Extensions.Configuration;
+using DbAnalyzer.Domain;
 using Microsoft.Extensions.Logging;
 using System.Data;
 using System.Data.SqlClient;
@@ -11,8 +12,7 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
     public class ProcedureExplorer : IProcedureExplorer
     {
         readonly ILogger<IndexExplorer> _logger;
-        private readonly string _connectionString;
-
+        private readonly IAppConfig _appConfig;
         readonly private string ProcStatExecutionCounterQuery = @"select 
 	                                                                '[' + sc.name + '].[' + obj.name + ']' ProcedureName,
                                                                     proc_stats.last_execution_time LastExecTime,
@@ -30,17 +30,18 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
                                                             FROM INFORMATION_SCHEMA.ROUTINES
                                                             WHERE ROUTINE_TYPE = 'PROCEDURE'";
 
-        public ProcedureExplorer(IConfiguration configuration, ILogger<IndexExplorer> logger)
+        public ProcedureExplorer(ILogger<IndexExplorer> logger,
+            IAppConfig appConfig)
         {
-            _connectionString = configuration.GetConnectionString("SqlConnection") ?? string.Empty;
             _logger = logger;
+            _appConfig = appConfig;
         }
 
         public async Task<IEnumerable<string>> GetProcNamesFromDbAsync()
         {
             try
             {
-                using var con = new SqlConnection(_connectionString);
+                using var con = new SqlConnection(_appConfig.GetCurrentDataSourceConnectionString());
                 return await con.QueryAsync<string>(GetProcedureNamesQuery);
             }
             catch (Exception ex)
@@ -55,7 +56,7 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
             var list = new List<SqlParameter>();
             try
             {
-                using var con = new SqlConnection(_connectionString);
+                using var con = new SqlConnection(_appConfig.GetCurrentDataSourceConnectionString());
                 using var cmd = new SqlCommand()
                 {
                     Connection = con,
@@ -80,8 +81,8 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
         {
             try
             {
-                using var con = new SqlConnection(_connectionString);
-                var bld = new SqlConnectionStringBuilder(_connectionString);
+                using var con = new SqlConnection(_appConfig.GetCurrentDataSourceConnectionString());
+                var bld = new SqlConnectionStringBuilder(_appConfig.GetCurrentDataSourceConnectionString());
                 return await con.QueryAsync<ProcedureExecStatistic>(ProcStatExecutionCounterQuery, new { Database = bld.InitialCatalog });
             }
             catch (Exception ex)
