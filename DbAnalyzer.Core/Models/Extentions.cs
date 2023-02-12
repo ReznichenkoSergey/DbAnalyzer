@@ -1,8 +1,7 @@
-﻿using DbAnalyzer.Core.Models;
-using DbAnalyzer.Core.Models.ExecPlanModels;
+﻿using DbAnalyzer.Core.Models.Helpers;
 using SqlAnalyzer.Core.Models.ExecPlanModels;
 using System.Text;
-using static SqlAnalyzer.Core.Infrastructure.Parsers.ExecPlanParser;
+using static DbAnalyzer.Core.Models.Parsers.ExecPlanParser;
 
 namespace SqlAnalyzer.Core.Models
 {

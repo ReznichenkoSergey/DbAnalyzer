@@ -1,8 +1,8 @@
+using DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes;
+using DbAnalyzer.Core.Infrastructure.Reports.Interfaces;
+using DbAnalyzer.Core.Infrastructure.Reports.Procedures;
+using DbAnalyzer.Core.Infrastructure.Reports.UnusedIndexes;
 using DbAnalyzer.Core.Models.ReportModels;
-using DbAnalyzer.Core.Reports.DublicateIndexes;
-using DbAnalyzer.Core.Reports.Interfaces;
-using DbAnalyzer.Core.Reports.Procedures;
-using DbAnalyzer.Core.Reports.UnusedIndexes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DbAnalyzer.Controllers

@@ -1,4 +1,6 @@
 using DbAnalyzer;
+using DbAnalyzer.Domain;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +11,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddService();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<DBAnalyzerContext>(x => x.UseSqlServer(connectionString));
+
+builder.Services.AddCustomService();
 
 var app = builder.Build();
 

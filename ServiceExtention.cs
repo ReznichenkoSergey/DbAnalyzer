@@ -1,18 +1,18 @@
-﻿using DbAnalyzer.Core.DbExplorers.DbIndexes;
-using DbAnalyzer.Core.DbExplorers.DbIndexes.Interfaces;
-using DbAnalyzer.Core.DbExplorers.DbProcedures;
-using DbAnalyzer.Core.DbExplorers.DbProcedures.Interfaces;
+﻿using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Interfaces;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Interfaces;
+using DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes;
+using DbAnalyzer.Core.Infrastructure.Reports.Interfaces;
+using DbAnalyzer.Core.Infrastructure.Reports.Procedures;
+using DbAnalyzer.Core.Infrastructure.Reports.UnusedIndexes;
 using DbAnalyzer.Core.Models.ReportModels;
-using DbAnalyzer.Core.Reports.DublicateIndexes;
-using DbAnalyzer.Core.Reports.Interfaces;
-using DbAnalyzer.Core.Reports.Procedures;
-using DbAnalyzer.Core.Reports.UnusedIndexes;
 
 namespace DbAnalyzer
 {
     public static class ServiceExtention
     {
-        public static void AddService(this IServiceCollection services)
+        public static void AddCustomService(this IServiceCollection services)
         {
             services.AddTransient<IIndexExplorer, IndexExplorer>();
             services.AddTransient<IProcedureExplorer, ProcedureExplorer>();
