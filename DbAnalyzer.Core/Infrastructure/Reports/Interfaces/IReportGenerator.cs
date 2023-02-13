@@ -6,6 +6,6 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.Interfaces
         where T : IReport
         where V : IQueryParams
     {
-        Task<T> GetReportAsync(V queryParams);
+        Task<T?> GetReportAsync(V queryParams);
     }
 }

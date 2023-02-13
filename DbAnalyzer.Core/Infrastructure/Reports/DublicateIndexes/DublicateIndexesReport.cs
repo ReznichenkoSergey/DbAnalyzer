@@ -21,20 +21,24 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes
             _logger = logger;
         }
 
-        public async Task<Report> GetReportAsync(DublicateIndexesQueryDto dto)
+        public async Task<Report?> GetReportAsync(DublicateIndexesQueryDto dto)
         {
-            var report = new Report()
-            {
-                Title = "Formation of a list of duplicate database indexes",
-                Description = "Contains a list of recommendations for removing duplicate indexes"
-            };
+            if (!dto.IsValid())
+                return null;
+
             try
             {
-                var reportItems = new List<IReportItem>();
+                var report = new Report()
+                {
+                    Title = "Formation of a list of duplicate database indexes",
+                    Description = "Contains a list of recommendations for removing duplicate indexes",
+                    ReportItems = new List<IReportItem>()
+                };
+
                 var items = await _indexExplorer.GetDublicateIndexesAsync();
                 if (items != null && items.Any())
                 {
-                    DbIndex temp = null;
+                    DbIndex? temp = null;
                     var dbScriptGenerator = new DbScriptGenerator();
                     items
                         .OrderBy(x => x.TableName)
@@ -45,27 +49,26 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes
                         {
                             if (temp != null && temp.Equals(x))
                             {
-                                reportItems.Add(new ReportItem()
+                                report.ReportItems.Add(new ReportItem()
                                 {
                                     ReportItemStatus = ReportItemStatus.Warning,
-                                    Query = dbScriptGenerator.GetDropIndexScript(x),
+                                    Query = dto.GenerateScripts ? dbScriptGenerator.GetDropIndexScript(x) : string.Empty,
                                     Annotation = dto.ShowAnnotation ? $"A copy of {temp.IndexName} index" : string.Empty
                                 });
                             }
                             temp = x;
                         });
                 }
-                report.ReportItems = reportItems;
                 report.Result = new List<string>()
                 {
-                    $"Warnings: {reportItems.Where(x=>x.ReportItemStatus == ReportItemStatus.Warning).Count()}"
+                    $"Warnings: {report.ReportItems.Where(x=>x.ReportItemStatus == ReportItemStatus.Warning).Count()}"
                 };
                 return report;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"GetReportAsync (DublicateIndexes), Error= {ex.Message}");
-                return report;
+                return null;
             }
         }
     }

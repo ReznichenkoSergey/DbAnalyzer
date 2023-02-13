@@ -27,7 +27,7 @@ namespace DbAnalyzer.Core.Models.Parsers
         {
             var items = new List<string>();
             var start = execPlanContent.IndexOf(statStartValue);
-            if (start > 0)
+            if (start > -1)
             {
                 var scriptGenerator = new DbScriptGenerator();
                 var end = execPlanContent.IndexOf(statEndValue) + statEndValue.Length;
@@ -43,7 +43,7 @@ namespace DbAnalyzer.Core.Models.Parsers
         {
             var items = new List<MissingIndex>();
             var start = execPlanContent.IndexOf(indexStartValue);
-            if (start > 0)
+            if (start > -1)
             {
                 var end = execPlanContent.IndexOf(indexEndValue) + indexEndValue.Length;
                 var xmlSerializer = new XmlSerializer(typeof(MissingIndexes));

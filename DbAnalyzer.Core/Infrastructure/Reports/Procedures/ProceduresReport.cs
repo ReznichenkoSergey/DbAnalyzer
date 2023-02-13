@@ -23,7 +23,7 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.Procedures
             _logger = logger;
         }
 
-        public async Task<Report> GetReportAsync(ProceduresReportQueryDto queryParams)
+        public async Task<Report?> GetReportAsync(ProceduresReportQueryDto queryParams)
         {
             var report = new Report()
             {
