@@ -1,3 +1,4 @@
+using DbAnalyzer.Core.Infrastructure.Configurations;
 using DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes;
 using DbAnalyzer.Core.Infrastructure.Reports.Interfaces;
 using DbAnalyzer.Core.Infrastructure.Reports.Procedures;
@@ -10,6 +11,7 @@ namespace DbAnalyzer.Controllers
     [ApiController]
     public class DbReportController : ControllerBase
     {
+        private readonly IAppConfig _appConfig;
         private readonly ILogger<DbExplorerController> _logger;
         private readonly IReportGenerator<Report, ProceduresReportQueryDto> _proceduresRG;
         private readonly IReportGenerator<Report, DublicateIndexesQueryDto> _dublicatesIndexesRG;
@@ -18,8 +20,10 @@ namespace DbAnalyzer.Controllers
         public DbReportController(ILogger<DbExplorerController> logger,
             IReportGenerator<Report, ProceduresReportQueryDto> proceduresRG,
             IReportGenerator<Report, DublicateIndexesQueryDto> dublicatesIndexesRG,
-            IReportGenerator<Report, UnusedIndexesQueryDto> unusedIndexesRG)
+            IReportGenerator<Report, UnusedIndexesQueryDto> unusedIndexesRG,
+            IAppConfig appConfig)
         {
+            _appConfig = appConfig;
             _logger = logger;
             _proceduresRG = proceduresRG;
             _dublicatesIndexesRG = dublicatesIndexesRG;
@@ -34,6 +38,10 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
+                if(string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
+                {
+                    return BadRequest("Set current data source");
+                }
                 if(!queryDto.IsValid())
                 {
                     return BadRequest("No arguments set");
@@ -56,7 +64,11 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
-                if(!queryDto.IsValid())
+                if (string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
+                {
+                    return BadRequest("Set current data source");
+                }
+                if (!queryDto.IsValid())
                 {
                     return BadRequest("No arguments set");
                 }
@@ -78,6 +90,10 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
+                {
+                    return BadRequest("Set current data source");
+                }
                 if (!queryDto.IsValid())
                 {
                     return BadRequest("No arguments set");

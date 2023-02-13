@@ -18,7 +18,7 @@ namespace DbAnalyzer.Core.Infrastructure.Configurations
             _scopeFactory = scopeFactory;
         }
 
-        public async Task SetCurrentDataSourceConnectionStringAsync(int dataSourceId)
+        public async Task<bool> SetCurrentDataSourceConnectionStringAsync(int dataSourceId)
         {
             try
             {
@@ -31,10 +31,12 @@ namespace DbAnalyzer.Core.Infrastructure.Configurations
                         _connectionString = item.Value;
                     }
                 }
+                return string.IsNullOrEmpty(_connectionString);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"AppConfig; SetCurrentDataSourceConnectionStringAsync, Error= {ex.Message}");
+                return false;
             }
         }
 

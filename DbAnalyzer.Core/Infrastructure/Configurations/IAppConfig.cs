@@ -2,7 +2,7 @@
 {
     public interface IAppConfig
     {
-        Task SetCurrentDataSourceConnectionStringAsync(int dataSourceId);
+        Task<bool> SetCurrentDataSourceConnectionStringAsync(int dataSourceId);
 
         string GetCurrentDataSourceConnectionString();
     }

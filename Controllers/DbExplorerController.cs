@@ -1,3 +1,4 @@
+using DbAnalyzer.Core.Infrastructure.Configurations;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Interfaces;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures;
@@ -10,14 +11,17 @@ namespace DbAnalyzer.Controllers
     [ApiController]
     public class DbExplorerController : ControllerBase
     {
+        private readonly IAppConfig _appConfig;
         private readonly ILogger<DbExplorerController> _logger;
         private readonly IProcedureExplorer _procExplorer;
         private readonly IIndexExplorer _indexExplorer;
 
         public DbExplorerController(ILogger<DbExplorerController> logger,
             IProcedureExplorer procExplorer,
-            IIndexExplorer indexExplorer)
+            IIndexExplorer indexExplorer,
+            IAppConfig appConfig)
         {
+            _appConfig = appConfig;
             _logger = logger;
             _procExplorer = procExplorer;
             _indexExplorer = indexExplorer;
@@ -31,6 +35,10 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
+                {
+                    return BadRequest("Set current data source");
+                }
                 var result = await _procExplorer.GetFullExecutionStatisticsAsync();
                 return new OkObjectResult(result);
             }
@@ -49,6 +57,10 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
+                {
+                    return BadRequest("Set current data source");
+                }
                 var result = await _procExplorer.GetProcNamesFromDbAsync();
                 return new OkObjectResult(result);
             }
@@ -67,6 +79,10 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
+                {
+                    return BadRequest("Set current data source");
+                }
                 var result = await _indexExplorer.GetDublicateIndexesAsync();
                 return new OkObjectResult(result);
             }
@@ -85,6 +101,10 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
+                {
+                    return BadRequest("Set current data source");
+                }
                 var result = await _indexExplorer.GetUnusedIndexesAsync();
                 return new OkObjectResult(result);
             }

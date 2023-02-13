@@ -29,6 +29,7 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.UnusedIndexes
             };
             try
             {
+                var spaceAmount = 0;
                 var reportItems = new List<IReportItem>();
                 var items = await _indexExplorer.GetUnusedIndexesAsync();
                 if (items != null && items.Any())
@@ -38,6 +39,7 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.UnusedIndexes
                         .ToList()
                         .ForEach(x =>
                         {
+                            spaceAmount += x.IndexSize;
                             reportItems.Add(new ReportItem()
                             {
                                 ReportItemStatus = ReportItemStatus.Warning,
@@ -49,7 +51,8 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.UnusedIndexes
                 report.ReportItems = reportItems;
                 report.Result = new List<string>()
                 {
-                    $"Warnings: {reportItems.Where(x=>x.ReportItemStatus == ReportItemStatus.Warning).Count()}"
+                    $"Warnings: {reportItems.Where(x=>x.ReportItemStatus == ReportItemStatus.Warning).Count()}",
+                    $"Released space: {spaceAmount} Kb"
                 };
                 return report;
             }

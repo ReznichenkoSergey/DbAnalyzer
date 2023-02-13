@@ -50,7 +50,11 @@ namespace DbAnalyzer.Controllers
             {
                 await _appConfig.SetCurrentDataSourceConnectionStringAsync(dataSourceId);
                 var result = !string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString());
-                return new OkObjectResult(result);
+                if (!result)
+                {
+                    return new NotFoundObjectResult("Active data source not set. Check data sources and set correct value");
+                }
+                return new OkObjectResult("Active data source set");
             }
             catch (Exception ex)
             {
@@ -68,6 +72,10 @@ namespace DbAnalyzer.Controllers
             try
             {
                 var result = _appConfig.GetCurrentDataSourceConnectionString();
+                if(string.IsNullOrEmpty(result))
+                {
+                    return new NotFoundObjectResult("Active data source not found. Check data sources and set correct value");
+                }
                 return new OkObjectResult(result);
             }
             catch (Exception ex)
