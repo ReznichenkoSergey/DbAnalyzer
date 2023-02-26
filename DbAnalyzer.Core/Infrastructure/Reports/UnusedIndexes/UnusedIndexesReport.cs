@@ -22,11 +22,7 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.UnusedIndexes
 
         public async Task<Report> GetReportAsync(UnusedIndexesQueryDto dto)
         {
-            var report = new Report()
-            {
-                Title = "Formation of a list of unused database indexes",
-                Description = "Contains a list of recommendations for removing unused indexes"
-            };
+            var report = new Report();
             try
             {
                 var spaceAmount = 0;

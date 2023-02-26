@@ -1,9 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using System.Text;
-using DbAnalyzer.Core.Infrastructure.Configurations;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Interfaces;
-using DbAnalyzer.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
@@ -12,17 +10,17 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
     {
         readonly ILogger<ExecPlanExplorer> _logger;
         private readonly IProcedureExplorer _explorer;
-        private readonly IAppConfig _appConfig;
+        private readonly string _connectionString;
         private const string EnableExPlan = "SET SHOWPLAN_XML ON;";
         private const string DisableExPlan = "SET SHOWPLAN_XML OFF;";
 
         public ExecPlanExplorer(ILogger<ExecPlanExplorer> logger, 
             IProcedureExplorer explorer,
-            IAppConfig appConfig)
+            IDbConnection con)
         {
             _logger = logger;
             _explorer = explorer;
-            _appConfig = appConfig;
+            _connectionString = con.ConnectionString;
         }
 
         public async Task<ExecPlanResultDto> GetExecPlanAsync(string procName)
@@ -31,16 +29,16 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
             {
                 try
                 {
+                    using var con = new SqlConnection(_connectionString);
                     var query = GetPreparedQuery(procName);
-                    using var con = new SqlConnection(_appConfig.GetCurrentDataSourceConnectionString());
 
-                    con.Open();
                     using var cmd = new SqlCommand()
                     {
                         Connection = con,
                         CommandText = EnableExPlan,
                         CommandType = CommandType.Text
                     };
+                    con.Open();
 
                     //ON
                     cmd.ExecuteNonQuery();
@@ -53,6 +51,7 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
                     //OFF
                     cmd.CommandText = DisableExPlan;
                     cmd.ExecuteNonQuery();
+
                     return new ExecPlanResultDto(ExecPlanResultType.Success, planContentText);
                 }
                 catch (Exception ex)

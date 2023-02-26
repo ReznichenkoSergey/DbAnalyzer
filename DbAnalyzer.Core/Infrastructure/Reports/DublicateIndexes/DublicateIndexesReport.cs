@@ -30,8 +30,6 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes
             {
                 var report = new Report()
                 {
-                    Title = "Formation of a list of duplicate database indexes",
-                    Description = "Contains a list of recommendations for removing duplicate indexes",
                     ReportItems = new List<IReportItem>()
                 };
 

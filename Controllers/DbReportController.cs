@@ -1,4 +1,3 @@
-using DbAnalyzer.Core.Infrastructure.Configurations;
 using DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes;
 using DbAnalyzer.Core.Infrastructure.Reports.Interfaces;
 using DbAnalyzer.Core.Infrastructure.Reports.Procedures;
@@ -11,23 +10,23 @@ namespace DbAnalyzer.Controllers
     [ApiController]
     public class DbReportController : ControllerBase
     {
-        private readonly IAppConfig _appConfig;
         private readonly ILogger<DbExplorerController> _logger;
         private readonly IReportGenerator<Report, ProceduresReportQueryDto> _proceduresRG;
         private readonly IReportGenerator<Report, DublicateIndexesQueryDto> _dublicatesIndexesRG;
         private readonly IReportGenerator<Report, UnusedIndexesQueryDto> _unusedIndexesRG;
+        private readonly IReportGenerator<Report, ExpensiveQueriesReportDto> _expensiveQueriesRG;
 
         public DbReportController(ILogger<DbExplorerController> logger,
             IReportGenerator<Report, ProceduresReportQueryDto> proceduresRG,
             IReportGenerator<Report, DublicateIndexesQueryDto> dublicatesIndexesRG,
             IReportGenerator<Report, UnusedIndexesQueryDto> unusedIndexesRG,
-            IAppConfig appConfig)
+            IReportGenerator<Report, ExpensiveQueriesReportDto> expensiveQueriesRG)
         {
-            _appConfig = appConfig;
             _logger = logger;
             _proceduresRG = proceduresRG;
             _dublicatesIndexesRG = dublicatesIndexesRG;
             _unusedIndexesRG = unusedIndexesRG;
+            _expensiveQueriesRG = expensiveQueriesRG;
         }
 
         [Route("api/1.0/reports/optimization/procedures")]
@@ -38,10 +37,6 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
-                if(string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
-                {
-                    return BadRequest("Set current data source");
-                }
                 if(!queryDto.IsValid())
                 {
                     return BadRequest("No arguments set");
@@ -64,10 +59,6 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
-                {
-                    return BadRequest("Set current data source");
-                }
                 if (!queryDto.IsValid())
                 {
                     return BadRequest("No arguments set");
@@ -90,10 +81,6 @@ namespace DbAnalyzer.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(_appConfig.GetCurrentDataSourceConnectionString()))
-                {
-                    return BadRequest("Set current data source");
-                }
                 if (!queryDto.IsValid())
                 {
                     return BadRequest("No arguments set");
@@ -104,6 +91,28 @@ namespace DbAnalyzer.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"GetUnusedIndexesReportAsync, Error= {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("api/1.0/reports/optimization/expensivequeries")]
+        [HttpPost]
+        [ProducesResponseType(typeof(Report), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        public async Task<IActionResult> GetExpensiveQueriesReportAsync([FromBody] ExpensiveQueriesReportDto queryDto)
+        {
+            try
+            {
+                if (!queryDto.IsValid())
+                {
+                    return BadRequest("No arguments set");
+                }
+                var result = await _expensiveQueriesRG.GetReportAsync(queryDto);
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"GetExpensiveQueriesReportAsync, Error= {ex.Message}");
                 return BadRequest(ex.Message);
             }
         }

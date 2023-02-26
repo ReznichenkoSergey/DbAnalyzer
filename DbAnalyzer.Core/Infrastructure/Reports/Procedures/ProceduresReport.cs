@@ -25,11 +25,7 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.Procedures
 
         public async Task<Report?> GetReportAsync(ProceduresReportQueryDto queryParams)
         {
-            var report = new Report()
-            {
-                Title = "Formation of a list of database indexes to optimize the execution of stored procedures",
-                Description = "Contains a list of scripts for creating database objects based on analysis of stored procedure execution plans"
-            };
+            var report = new Report();
             try
             {
                 var reportItems = new List<IReportItem>();
