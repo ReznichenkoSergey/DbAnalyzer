@@ -1,34 +1,34 @@
-﻿using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries;
-using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Interfaces;
-using DbAnalyzer.Core.Infrastructure.Reports.Interfaces;
+﻿using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Interfaces;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Models;
+using DbAnalyzer.Core.Infrastructure.Reports.DbProcedures;
 using DbAnalyzer.Core.Models.Parsers;
 using DbAnalyzer.Core.Models.ReportModels;
 using DbAnalyzer.Core.Models.ReportModels.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace DbAnalyzer.Core.Infrastructure.Reports.Procedures
+namespace DbAnalyzer.Core.Infrastructure.Reports.Queries
 {
-    public class ExpensiveQueriesReport : IReportGenerator<Report, ExpensiveQueriesReportDto>
+    public class ExpensiveQueriesReport : IExpensiveQueriesReport
     {
         private readonly IDbQueryExplorer _dbQueryExplorer;
-        private readonly ILogger<ProceduresReport> _logger;
+        private readonly ILogger<ProceduresUsageReport> _logger;
         public List<ReportItem> ReportItems { get; private set; }
 
         public ExpensiveQueriesReport(IDbQueryExplorer dbQueryExplorer,
-            ILogger<ProceduresReport> logger)
+            ILogger<ProceduresUsageReport> logger)
         {
             _dbQueryExplorer = dbQueryExplorer;
             _logger = logger;
         }
 
-        public async Task<Report?> GetReportAsync(ExpensiveQueriesReportDto queryParams)
+        public async Task<Report> GetReportAsync(ExpensiveQueryOrderingEnum ordering, int topAmount)
         {
             var report = new Report();
             try
             {
                 var reportItems = new List<IReportItem>();
                 var parser = new ExecPlanParser();
-                var queries = await _dbQueryExplorer.GetExpensiveQueryListAsync(queryParams.Ordering, queryParams.TakeTopAmount, true);
+                var queries = await _dbQueryExplorer.GetExpensiveQueryListAsync(ordering, topAmount, true);
                 
                 Parallel.ForEach(queries, (query, token) =>
                 {

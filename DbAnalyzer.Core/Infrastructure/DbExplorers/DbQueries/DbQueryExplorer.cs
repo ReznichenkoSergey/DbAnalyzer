@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Interfaces;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Models;
 using Microsoft.Extensions.Logging;
 using System.Data;
 

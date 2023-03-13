@@ -1,4 +1,4 @@
-﻿namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes
+﻿namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Models
 {
     public class UnusedIndexStatistic
     {

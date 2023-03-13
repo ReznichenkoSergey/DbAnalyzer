@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlClient;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Models;
 
 namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Interfaces
 {

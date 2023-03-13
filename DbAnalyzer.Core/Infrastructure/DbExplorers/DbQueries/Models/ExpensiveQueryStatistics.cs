@@ -1,7 +1,7 @@
 ﻿using DbAnalyzer.Core.Models;
 using System.Text.Json.Serialization;
 
-namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries
+namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Models
 {
     public class ExpensiveQueryStatistics
     {
@@ -72,5 +72,5 @@ namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries
         }
 
     }
-         
+
 }

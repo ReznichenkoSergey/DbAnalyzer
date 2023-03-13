@@ -1,4 +1,5 @@
-﻿using DbAnalyzer.Core.Models.ExecPlanModels;
+﻿using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Models;
+using DbAnalyzer.Core.Models.ExecPlanModels;
 using SqlAnalyzer.Core.Models.ExecPlanModels;
 using System.Text;
 

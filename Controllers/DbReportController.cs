@@ -1,7 +1,8 @@
-using DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes;
-using DbAnalyzer.Core.Infrastructure.Reports.Interfaces;
-using DbAnalyzer.Core.Infrastructure.Reports.Procedures;
-using DbAnalyzer.Core.Infrastructure.Reports.UnusedIndexes;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Models;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Models;
+using DbAnalyzer.Core.Infrastructure.Reports.DbIndexes;
+using DbAnalyzer.Core.Infrastructure.Reports.DbProcedures;
+using DbAnalyzer.Core.Infrastructure.Reports.Queries;
 using DbAnalyzer.Core.Models.ReportModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,37 +12,30 @@ namespace DbAnalyzer.Controllers
     public class DbReportController : ControllerBase
     {
         private readonly ILogger<DbExplorerController> _logger;
-        private readonly IReportGenerator<Report, ProceduresReportQueryDto> _proceduresRG;
-        private readonly IReportGenerator<Report, DublicateIndexesQueryDto> _dublicatesIndexesRG;
-        private readonly IReportGenerator<Report, UnusedIndexesQueryDto> _unusedIndexesRG;
-        private readonly IReportGenerator<Report, ExpensiveQueriesReportDto> _expensiveQueriesRG;
+        private readonly IProceduresUsageReport _proceduresUsageReport;
+        private readonly IExpensiveQueriesReport _expensiveQueriesReport;
+        private readonly IDbIndexReports _dbIndexReports;
 
         public DbReportController(ILogger<DbExplorerController> logger,
-            IReportGenerator<Report, ProceduresReportQueryDto> proceduresRG,
-            IReportGenerator<Report, DublicateIndexesQueryDto> dublicatesIndexesRG,
-            IReportGenerator<Report, UnusedIndexesQueryDto> unusedIndexesRG,
-            IReportGenerator<Report, ExpensiveQueriesReportDto> expensiveQueriesRG)
+            IProceduresUsageReport proceduresUsageReport,
+            IExpensiveQueriesReport expensiveQueriesReport,
+            IDbIndexReports dbIndexReports)
         {
             _logger = logger;
-            _proceduresRG = proceduresRG;
-            _dublicatesIndexesRG = dublicatesIndexesRG;
-            _unusedIndexesRG = unusedIndexesRG;
-            _expensiveQueriesRG = expensiveQueriesRG;
+            _proceduresUsageReport = proceduresUsageReport;
+            _expensiveQueriesReport = expensiveQueriesReport;
+            _dbIndexReports = dbIndexReports;
         }
 
         [Route("api/1.0/reports/optimization/procedures")]
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(Report), 200)]
         [ProducesResponseType(typeof(string), 400)]
-        public async Task<IActionResult> GetNewIndexReportAsync([FromBody] ProceduresReportQueryDto queryDto)
+        public async Task<IActionResult> GetNewIndexReportAsync()
         {
             try
             {
-                if(!queryDto.IsValid())
-                {
-                    return BadRequest("No arguments set");
-                }
-                var result = await _proceduresRG.GetReportAsync(queryDto);
+                var result = await _proceduresUsageReport.GetReportAsync();
                 return new OkObjectResult(result);
             }
             catch (Exception ex)
@@ -52,18 +46,14 @@ namespace DbAnalyzer.Controllers
         }
 
         [Route("api/1.0/reports/optimization/indexes/dublicates")]
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(Report), 200)]
         [ProducesResponseType(typeof(string), 400)]
-        public async Task<IActionResult> GetDublicateIndexesReportAsync([FromBody] DublicateIndexesQueryDto queryDto)
+        public async Task<IActionResult> GetDublicateIndexesReportAsync()
         {
             try
             {
-                if (!queryDto.IsValid())
-                {
-                    return BadRequest("No arguments set");
-                }
-                var result = await _dublicatesIndexesRG.GetReportAsync(queryDto);
+                var result = await _dbIndexReports.GetDublicateIndexesReportAsync();
                 return new OkObjectResult(result);
             }
             catch (Exception ex)
@@ -74,18 +64,14 @@ namespace DbAnalyzer.Controllers
         }
 
         [Route("api/1.0/reports/optimization/indexes/unused")]
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(Report), 200)]
         [ProducesResponseType(typeof(string), 400)]
-        public async Task<IActionResult> GetUnusedIndexesReportAsync([FromBody] UnusedIndexesQueryDto queryDto)
+        public async Task<IActionResult> GetUnusedIndexesReportAsync()
         {
             try
             {
-                if (!queryDto.IsValid())
-                {
-                    return BadRequest("No arguments set");
-                }
-                var result = await _unusedIndexesRG.GetReportAsync(queryDto);
+                var result = await _dbIndexReports.GetUnusedIndexesReportAsync();
                 return new OkObjectResult(result);
             }
             catch (Exception ex)
@@ -96,23 +82,64 @@ namespace DbAnalyzer.Controllers
         }
 
         [Route("api/1.0/reports/optimization/expensivequeries")]
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(Report), 200)]
         [ProducesResponseType(typeof(string), 400)]
-        public async Task<IActionResult> GetExpensiveQueriesReportAsync([FromBody] ExpensiveQueriesReportDto queryDto)
+        public async Task<IActionResult> GetExpensiveQueriesReportAsync([FromQuery] ExpensiveQueryOrderingEnum ordering, int topAmount)
         {
             try
             {
-                if (!queryDto.IsValid())
-                {
-                    return BadRequest("No arguments set");
-                }
-                var result = await _expensiveQueriesRG.GetReportAsync(queryDto);
+                var result = await _expensiveQueriesReport.GetReportAsync(ordering, topAmount);
                 return new OkObjectResult(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"GetExpensiveQueriesReportAsync, Error= {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("api/1.0/reports/statistic/indexes/usage/procedures")]
+        [HttpGet]
+        [ProducesResponseType(typeof(List<NonclusterIndexUsageStatistic>), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        public async Task<IActionResult> GetNonclusterIndexesUsageReportAsync()
+        {
+            try
+            {
+                var result = await _dbIndexReports.GetNonClusterIndexesReportAsync();
+                return new OkObjectResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"GetNonclusterIndexesUsageReportAsync, Error= {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("api/1.0/reports/statistic/indexes/usage")]
+        [HttpGet]
+        [ProducesResponseType(typeof(List<NonclusterIndexUsageStatistic>), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        public async Task<IActionResult> GetNonclusterIndexesUsageReport1Async()
+        {
+            try
+            {
+                var result = await _dbIndexReports.GetNonClusterIndexesReportAsync();
+                var t = result
+                    .SelectMany(x => x.Indexes)
+                    .GroupBy(x => x.IndexName)
+                    .Select(x => new
+                    {
+                        IndexName = x.Key,
+                        Count = x.Count()
+                    })
+                    .OrderByDescending(x => x.Count);
+                return new OkObjectResult(t);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"GetNonclusterIndexesUsageReportAsync, Error= {ex.Message}");
                 return BadRequest(ex.Message);
             }
         }

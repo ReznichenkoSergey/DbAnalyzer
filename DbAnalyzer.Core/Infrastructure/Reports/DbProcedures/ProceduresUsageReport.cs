@@ -1,29 +1,28 @@
 ﻿using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Interfaces;
-using DbAnalyzer.Core.Infrastructure.Reports.Interfaces;
 using DbAnalyzer.Core.Models.Parsers;
 using DbAnalyzer.Core.Models.ReportModels;
 using DbAnalyzer.Core.Models.ReportModels.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace DbAnalyzer.Core.Infrastructure.Reports.Procedures
+namespace DbAnalyzer.Core.Infrastructure.Reports.DbProcedures
 {
-    public class ProceduresReport : IReportGenerator<Report, ProceduresReportQueryDto>
+    public class ProceduresUsageReport : IProceduresUsageReport
     {
         private readonly IProcedureExplorer _procedureExplorer;
         private readonly IExecPlanExplorer _execPlanExplorer;
-        private readonly ILogger<ProceduresReport> _logger;
+        private readonly ILogger<ProceduresUsageReport> _logger;
         public List<ReportItem> ReportItems { get; private set; }
 
-        public ProceduresReport(IProcedureExplorer procedureExplorer,
+        public ProceduresUsageReport(IProcedureExplorer procedureExplorer,
             IExecPlanExplorer execPlanExplorer,
-            ILogger<ProceduresReport> logger)
+            ILogger<ProceduresUsageReport> logger)
         {
             _procedureExplorer = procedureExplorer;
             _execPlanExplorer = execPlanExplorer;
             _logger = logger;
         }
 
-        public async Task<Report?> GetReportAsync(ProceduresReportQueryDto queryParams)
+        public async Task<Report?> GetReportAsync()
         {
             var report = new Report();
             try
@@ -36,7 +35,14 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.Procedures
                 await Parallel.ForEachAsync(procNames, async (procName, token) =>
                 {
                     var planResult = await _execPlanExplorer.GetExecPlanAsync(procName);
-                    if (queryParams.ShowWithRecommendations && planResult.ExecPlanResultType == ExecPlanResultType.Success && !string.IsNullOrEmpty(planResult.Content))
+
+                    if (!string.IsNullOrEmpty(planResult?.Content) && planResult.Content.Contains("IndexKind=\"NonClustered\"", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var list = parser.GetUsedNonclusterIndexes(planResult.Content);
+
+                    }
+
+                    if (planResult.ExecPlanResultType == ExecPlanResultType.Success && !string.IsNullOrEmpty(planResult.Content))
                     {
                         var missingIndexes = parser.GetMissingIndexes(planResult.Content);
                         var procStat = procExecStatistics.FirstOrDefault(x => x.ProcedureName.Equals(procName));
@@ -58,7 +64,7 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.Procedures
                                 });
                             }
                         }
-                        else if (queryParams.ShowWithoutOptimizations)
+                        else
                         {
                             reportItems.Add(new ReportItem()
                             {
@@ -81,7 +87,7 @@ namespace DbAnalyzer.Core.Infrastructure.Reports.Procedures
                             }
                         }
                     }
-                    else if (queryParams.ShowWithErrors)
+                    else
                     {
                         reportItems.Add(new ReportItem()
                         {

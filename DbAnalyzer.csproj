@@ -35,7 +35,6 @@
 
   <ItemGroup>
     <ProjectReference Include="DbAnalyzer.Core\DbAnalyzer.Core.csproj" />
-    <ProjectReference Include="DbAnalyzer.Domain\DbAnalyzer.Domain.csproj" />
   </ItemGroup>
 
 </Project>

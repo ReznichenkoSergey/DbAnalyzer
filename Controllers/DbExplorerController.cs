@@ -1,10 +1,9 @@
-using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Interfaces;
-using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Models;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Interfaces;
-using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Models;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Interfaces;
-using DbAnalyzer.Core.Models.ExecPlanModels;
+using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DbAnalyzer.Controllers

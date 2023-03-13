@@ -1,4 +1,4 @@
-﻿namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures
+﻿namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Models
 {
     public class ProcedureExecStatistic
     {

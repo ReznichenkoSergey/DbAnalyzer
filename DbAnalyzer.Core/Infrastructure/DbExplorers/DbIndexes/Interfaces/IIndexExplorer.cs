@@ -1,4 +1,4 @@
-﻿using DbAnalyzer.Core.Models.ExecPlanModels;
+﻿using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Models;
 
 namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Interfaces
 {

@@ -1,4 +1,6 @@
-﻿namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Interfaces
+﻿using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Models;
+
+namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Interfaces
 {
     public interface IDbQueryExplorer
     {

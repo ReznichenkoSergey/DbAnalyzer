@@ -1,5 +1,4 @@
 using DbAnalyzer;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Data.SqlClient;
 

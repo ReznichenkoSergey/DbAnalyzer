@@ -4,11 +4,9 @@ using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbProcedures.Interfaces;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries;
 using DbAnalyzer.Core.Infrastructure.DbExplorers.DbQueries.Interfaces;
-using DbAnalyzer.Core.Infrastructure.Reports.DublicateIndexes;
-using DbAnalyzer.Core.Infrastructure.Reports.Interfaces;
-using DbAnalyzer.Core.Infrastructure.Reports.Procedures;
-using DbAnalyzer.Core.Infrastructure.Reports.UnusedIndexes;
-using DbAnalyzer.Core.Models.ReportModels;
+using DbAnalyzer.Core.Infrastructure.Reports.DbIndexes;
+using DbAnalyzer.Core.Infrastructure.Reports.DbProcedures;
+using DbAnalyzer.Core.Infrastructure.Reports.Queries;
 
 namespace DbAnalyzer
 {
@@ -21,10 +19,9 @@ namespace DbAnalyzer
                 .AddTransient<IProcedureExplorer, ProcedureExplorer>()
                 .AddTransient<IExecPlanExplorer, ExecPlanExplorer>()
                 .AddTransient<IDbQueryExplorer, DbQueryExplorer>()
-                .AddTransient<IReportGenerator<Report, ProceduresReportQueryDto>, ProceduresReport>()
-                .AddTransient<IReportGenerator<Report, DublicateIndexesQueryDto>, DublicateIndexesReport>()
-                .AddTransient<IReportGenerator<Report, UnusedIndexesQueryDto>, UnusedIndexesReport>()
-                .AddTransient<IReportGenerator<Report, ExpensiveQueriesReportDto>, ExpensiveQueriesReport>();
+                .AddTransient<IProceduresUsageReport, ProceduresUsageReport>()
+                .AddTransient<IExpensiveQueriesReport, ExpensiveQueriesReport>()
+                .AddTransient<IDbIndexReports, DbIndexReports>();
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿namespace DbAnalyzer.Core.Models.ExecPlanModels
+﻿namespace DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Models
 {
-    public class DbIndex
+    public class DbIndex : DbIndexBase
     {
-        public string TableName { get; set; }
-        public string IndexName { get; set; }
         public string KeyColumnList { get; set; }
         public string IncludeColumnList { get; set; }
         public override bool Equals(object obj)
@@ -12,6 +10,11 @@
             return TableName.Equals(temp.TableName)
                 && KeyColumnList.Equals(temp.KeyColumnList)
                 && IncludeColumnList.Equals(temp.IncludeColumnList);
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿using DbAnalyzer.Core.Models.ExecPlanModels;
+﻿using DbAnalyzer.Core.Infrastructure.DbExplorers.DbIndexes.Models;
+using DbAnalyzer.Core.Models.ExecPlanModels;
 using DbAnalyzer.Core.Models.Helpers;
 using SqlAnalyzer.Core.Models;
 using SqlAnalyzer.Core.Models.ExecPlanModels;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace DbAnalyzer.Core.Models.Parsers
@@ -52,6 +54,22 @@ namespace DbAnalyzer.Core.Models.Parsers
                 items.Add(missingIndexes.GetMissingIndex(_cultureInfo));
             }
             return items;
+        }
+
+        public IList<DbIndexBase> GetUsedNonclusterIndexes(string execPlanContent)
+        {
+            if (string.IsNullOrEmpty(execPlanContent))
+                return new List<DbIndexBase>();
+
+            var root = XElement.Parse(execPlanContent);
+            return root.Descendants()
+                .Where(p => p.Name.LocalName == "Object" && p.Attribute("IndexKind") != null && p.Attribute("IndexKind").Value.Equals("NonClustered", StringComparison.OrdinalIgnoreCase))
+                .Select(x => new DbIndexBase()
+                {
+                    TableName = $"{x.Attribute("Schema").Value}.{x.Attribute("Table").Value}",
+                    IndexName = $"{x.Attribute("Schema").Value}.{x.Attribute("Index").Value}"
+                })
+                .ToList();
         }
 
         public class MissingIndex
